@@ -1,0 +1,37 @@
+<h1>Library Mangement System</h1>
+<h1>Sign Up</h1>
+
+<% if @error.present? %>
+  <h2><%= @error %></h2>
+<% end %>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<%= form_for :sign_up_request, url: user_create_path, local: true do |f| %>
+  <p>
+    <%= f.label :user %><br/>
+    <%= f.text_field :user %>
+  </p>
+  <p>
+    <%= f.label :email %><br/>
+    <%= f.text_field :email %>
+  </p>
+  <p>
+    <%= f.label :age %><br/>
+    <%= f.text_field :age %>
+  </p>
+  <p>
+    <%= f.label :user_type %><br/>
+    <%= f.collection_select :user_type_id, UserType.all,:id,:type, include_blank: false %>
+  </p>
+  <p>
+    <%= f.label :password %><br/>
+    <%= f.text_field :password %>
+  </p>
+  <p>
+    <%= f.label :confirm_password %><br/>
+    <%= f.password_field :confirm_password %>
+  </p>
+  <p>
+    <%= f.submit 'Sign Up'%>
+  </p>
+<% end %>

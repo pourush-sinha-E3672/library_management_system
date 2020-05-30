@@ -1,0 +1,17 @@
+<h1>User List</h1>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<body>
+<table border = "1">
+  <tr>
+    <th>User</th>
+    <th>Issued A</th>
+  </tr>
+<% @issued_users.each do |k,v| %>
+    <tr><td><%=k%> </td><td><%=v%></td></tr>
+<% end %>
+</table>
+<p></p>
+<p></p>
+<p><%= link_to 'BACK', book_details_path(@book_id,user_id: @user_id) %></p>
+</body>

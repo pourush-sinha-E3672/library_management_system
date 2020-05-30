@@ -1,0 +1,37 @@
+<h1>Add Book</h1>
+<% if @error.present? %>
+  <h2><%= @error %></h2>
+<% end %>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<%= form_for(:book_add_request, url: add_book_path(:user_id =>@user_id)) do |f| %>
+  <p>
+    <%= f.label :name %><br/>
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :Author %><br/>
+    <%= f.text_field :author %>
+  </p>
+  <p>
+    <%= f.label :Book_Type %><br/>
+    <%= f.text_field :book_type %>
+  </p>
+  <p>
+    <%= f.label :total_available %><br/>
+    <%= f.fields_for :book_metadata do |f1| %>
+      <%= f1.text_field :total_available %>
+    <% end %>
+  </p>
+
+  <p>
+    <%= f.label :total_number %><br/>
+    <%= f.fields_for :book_metadata do |f1| %>
+      <%= f1.text_field :total_number %>
+    <% end %>
+  </p>
+  <p>
+    <%= f.submit 'Add'%>
+  </p>
+<% end %>
+<p><%= link_to 'home', list_books_path(user_id: @user_id)%> </p>

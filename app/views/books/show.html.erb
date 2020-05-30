@@ -1,0 +1,14 @@
+<h1>Book Details</h1>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<p><b>Name:</b> <%=@book.name %></p>
+<p><b>Author:</b> <%=@book.author %></p>
+<p><b>Type:</b> <%=@book.book_type %></p>
+<p><b>Total Books:</b> <%=@book.book_metadata.total_number %></p>
+<p><b>Total Available:</b> <%=@book.book_metadata.total_available %></p>
+<p><b>In booking:</b> <%=(@book.book_metadata.total_number - @book.book_metadata.total_available) %></p>
+<p><%= link_to 'home', list_books_path(user_id: @user_id)%>
+   <%= link_to 'issued_users', book_user_list_path(user_id: @user_id)%>
+</p>
+
+

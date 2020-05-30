@@ -1,0 +1,32 @@
+<h1>List of Books</h1>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<body>
+<table border = "1">
+  <tr>
+    <th>Name</th>
+    <th>total_available_books</th>
+  </tr>
+<% @book.each do|book| %>
+    <tr>
+      <td><%=book.name%></td>
+      <td><%=book.book_metadata.total_available%></td>
+      <td><%= link_to 'SHOW', book_details_path(book,user_id: @user.id) %></td>
+       <%  if  book.is_issued(@user.id) %>
+          <td><%=  link_to  'RETURN' ,book_return_path(params: {user_id: @user.id,book_id: book.id}) , method: :post%></td>
+        <%  elsif book.is_available%>
+        <td><%=  link_to  'ISSUE' ,book_issue_path(params: {user_id: @user.id,book_id: book.id}), method: :post%></td>
+      <%  else %>
+        <td><%=  'NOT_AVAILABLE' %></td>
+      <% end %>
+      <% if @is_admin %>
+        <td> <%= link_to 'EDIT', book_edit_path(book,user_id: @user.id) %></td>
+        <td><%= link_to 'DELETE', delete_book_path(book,user_id: @user.id), method: :put%></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </table>
+<p><%= link_to 'Add Book', book_add_path(user_id: @user.id), method: :post%></p>
+<p><%= link_to 'LOGOUT', logout_path(@user) , method: :put%></p>
+  </body>
+

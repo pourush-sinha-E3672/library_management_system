@@ -1,0 +1,16 @@
+<h1>Library Mangement System</h1>
+<h1>Enter Otp</h1>
+<% if @error.present? %>
+  <h2><%= @error %></h2>
+<% end %>
+<p class="notice"><%= flash[:notice] %></p>
+<p class="alert"><%= flash[:alert] %></p>
+<%= form_for(:otp_sign_up_request, url: sign_up_verify_otp_path(@user_id),local: true) do |f| %>
+  <p>
+    <%= f.label :otp %><br/>
+    <%= f.text_field :otp %>
+  </p>
+  <p>
+    <%= f.submit 'Sign Up'%>
+  </p>
+<% end %>
