@@ -60,7 +60,7 @@ Rails.application.routes.draw do
   post 'sign_up/verify_otp/:id' ,to: "users#verify_otp" ,as: 'sign_up_verify_otp'
   put 'logout/:id' ,to: "login#logout", as:'logout'
   post 'user/create' ,to: "users#create_user"
-  get  'list_books' ,to: "books#list"
+  match  'list_books' ,to: "books#list" ,via: [:get ,:post]
   get  'book_details/:id' ,to: "books#show" ,as: 'book_details'
   get  'book/edit/:id' ,to: "books#edit" ,as: 'book_edit'
   post 'book/update/:id' ,to: "books#update" ,as: 'book_update'

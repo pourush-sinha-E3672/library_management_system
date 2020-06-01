@@ -29,6 +29,8 @@ gem 'daemons'
 gem 'rspec-rails'
 gem 'redis'
 gem 'redis-namespace'
+gem 'elasticsearch-model', '~> 6'
+gem 'elasticsearch-rails', '~> 6'
 gem 'redis-lock'
 
 

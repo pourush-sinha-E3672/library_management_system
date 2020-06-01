@@ -1,13 +1,20 @@
 class BooksController < ApplicationController
-  before_action :check_user_session
+  before_action :check_if_user_exists,:check_user_session
 
   def list
     user_id =params[:user_id]
     user = UsersHelper.get_user_by_id(user_id)
     @is_admin = user.present? ? user.is_admin : false
     @user =user
-    @book = Book.where(is_deleted: 0)
-
+    @book =[]
+    if(params[:query]).present?
+      books_list = Book.search_active(params[:query])
+      if books_list.present?
+        @book = books_list.records.to_a
+      end
+    else
+      @book = Book.where(is_deleted: 0)
+    end
   end
 
   def edit
@@ -30,15 +37,14 @@ class BooksController < ApplicationController
     book.book_metadata.save!
     book.save!
     redirect_to book_details_path(book,user_id: user_id)
-=begin
-    @book =Book.find(id)
-=end
   end
 
   def show
     id = params[:id]
     @book = Book.find(id)
     @user_id = params[:user_id]
+    user = UsersHelper.get_user_by_id(@user_id)
+    @is_admin = user.present? ? user.is_admin : false
   end
 
   def delete
@@ -76,19 +82,23 @@ class BooksController < ApplicationController
     book.book_metadata =BookMetadata.new
     book.book_metadata.total_available = params["book_add_request"]["book_metadata"]["total_available"].to_i
     book.book_metadata.total_number = params["book_add_request"]["book_metadata"]["total_number"].to_i
-    book.book_metadata.save!
+    #book.book_metadata.save!
     book.save!
     redirect_to book_details_path(book,user_id: user_id)
 
   end
 
   private
+  def check_if_user_exists
+    user_id = params[:user_id]
+    user = UsersHelper.get_user_by_id(user_id)
+    if(!user.present?)
+      redirect_to root_path,:alert=>"User does not exist please signup for for access"
+    end
+  end
 
   def check_user_session
     user_id = params[:user_id]
-    if !user_id.present?
-      render root_path
-    end
     key ="user_session_#{user_id}"
     session = $redis.get(key)
     if session.present?
@@ -96,9 +106,8 @@ class BooksController < ApplicationController
       value["last_updated"] = Time.now.to_s
       $redis.setex(key, 180, value)
     else
-       redirect_to root_path,:notice =>"Your session is over Please login again for access"
+       redirect_to root_path,:alert =>"Your session is over Please login again for access"
        return
-
     end
 
   end

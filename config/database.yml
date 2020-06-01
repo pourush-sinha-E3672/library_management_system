@@ -14,12 +14,13 @@ default: &default
   encoding: utf8
   pool: 5
   username: root
-  password: root
+  password:
   host: 127.0.0.1
 
 development:
   <<: *default
-  database: library_management_system
+  database: library_mangement_system1
+
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

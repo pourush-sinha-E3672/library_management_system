@@ -7,8 +7,10 @@
 <p><b>Total Books:</b> <%=@book.book_metadata.total_number %></p>
 <p><b>Total Available:</b> <%=@book.book_metadata.total_available %></p>
 <p><b>In booking:</b> <%=(@book.book_metadata.total_number - @book.book_metadata.total_available) %></p>
-<p><%= link_to 'home', list_books_path(user_id: @user_id)%>
-   <%= link_to 'issued_users', book_user_list_path(user_id: @user_id)%>
+<p><%= link_to 'HOME', list_books_path(user_id: @user_id)%>
+  <% if @is_admin %>
+   <%= link_to 'ISSUED_USERS', book_user_list_path(user_id: @user_id)%>
+  <% end %>
 </p>
 
 

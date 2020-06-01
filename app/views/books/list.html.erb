@@ -2,11 +2,16 @@
 <p class="notice"><%= flash[:notice] %></p>
 <p class="alert"><%= flash[:alert] %></p>
 <body>
+<%= form_tag  url: list_books_path ,user_id: @user.id do %>
+  <%= text_field_tag :query %>
+  <%= submit_tag "Search", data: { disable_with: "Please wait.." } %>
+<% end %>
 <table border = "1">
   <tr>
     <th>Name</th>
     <th>total_available_books</th>
   </tr>
+
 <% @book.each do|book| %>
     <tr>
       <td><%=book.name%></td>
@@ -26,7 +31,9 @@
     </tr>
   <% end %>
   </table>
-<p><%= link_to 'Add Book', book_add_path(user_id: @user.id), method: :post%></p>
+<% if @is_admin %>
+  <p><%= link_to 'Add Book', book_add_path(user_id: @user.id), method: :post%></p>
+<% end %>
 <p><%= link_to 'LOGOUT', logout_path(@user) , method: :put%></p>
   </body>
 

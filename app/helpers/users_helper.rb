@@ -4,7 +4,7 @@ module UsersHelper
   end
 
   def self.get_user_by_id(id)
-    user = User.find(id)
+    user = User.where(:id =>id).first
   end
 
   def self.validate_sign_up_request(sign_up_request)

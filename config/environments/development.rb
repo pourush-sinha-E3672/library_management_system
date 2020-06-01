@@ -23,8 +23,8 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
       :address              => "smtp.gmail.com",
       :port                 => 587,
-      :user_name            => "pourush.sinha.study@gmail.com",
-      :password             => "fucksjcit",
+      :user_name            => YAML.load_file("#{Rails.root.to_s}/config/email_config.yml")[Rails.env]["email"],
+      :password             => YAML.load_file("#{Rails.root.to_s}/config/email_config.yml")[Rails.env]["password"],
       :authentication       => "plain"
   }
 

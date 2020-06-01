@@ -1,10 +1,10 @@
 <h1>Library Mangement System</h1>
 <% if @error.present? %>
-  <h2><%= @error %></h2>
+  <h1><%= @error %></h1>
 <% end %>
 
-<p class="notice"><%= flash[:notice] %></p>
-<p class="alert"><%= flash[:alert] %></p>
+<p class="notice"><h2 style="color:#ff0000;"><%= flash[:notice] %></h2></p>
+<p class="alert""><h2 style="color:#ff0000;"><%= flash[:alert] %></h2></p>
 <%= form_for :login_request, url: login_path, local: true do |f| %>
   <p>
     <%= f.label :user %><br/>

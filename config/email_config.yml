@@ -1,0 +1,7 @@
+default: &default
+  email:
+  password: 
+
+development:
+  <<: *default
+

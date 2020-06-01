@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
 
   module USER_TYPE
     ADMIN = 'ADMIN'
+    STUDENT ='STUDENT'
   end
 
   def is_admin
