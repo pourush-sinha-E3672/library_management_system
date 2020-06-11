@@ -6,13 +6,28 @@ class LoginController < ApplicationController
   end
 
   def login
-    user = params[:login_request][:user]
+    user_name = params[:login_request][:user]
     password = params[:login_request][:password]
 
     begin
-      user = LoginHelper.validate_login(user,password)
+      user =  User.includes(:user_password).where(:name=>user_name,:state =>'active').first
+      if !user.present?
+        redirect_to root_path(error:"Invalid user #{user}")
+        return
+      end
+
+      if (!user.user_password.present? || !user.user_password.authenticate(password))
+        redirect_to root_path(error:"Invalid password for user #{user}")
+        return
+      end
       user.login
-      LoginHelper.start_session(user.id)
+      key ="user_session_#{user.id}"
+      value={}
+      session[:login_at] =Time.now.to_s
+      session[:last_updated] = Time.now.to_s
+      session[:expires_at] = Time.now + 60
+      #$redis.setex(key, 180, value)
+      session[:user_id] =user.id
     rescue LmsError => e
       redirect_to root_path(error: e.message)
       return
@@ -25,7 +40,9 @@ class LoginController < ApplicationController
     user_id = params[:id]
     user = User.find(user_id)
     user.logout
-    LoginHelper.end_session(user.id)
+    key ="user_session_#{user_id}"
+    $redis.del(key)
+    session[:user_id]=nil
     redirect_to root_path
   end
 

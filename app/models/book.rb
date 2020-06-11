@@ -1,14 +1,16 @@
 class Book < ActiveRecord::Base
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
-  has_one :book_metadata, class_name: BookMetadata
+  has_one :book_metadata, class_name: BookMetadata ,:dependent => :destroy
   accepts_nested_attributes_for :book_metadata
-  has_many :book_user_associations
+  has_many :book_user_associations ,:dependent => :destroy
   has_many :users ,:through => :book_user_associations
 
   validates :name, presence: true
   validates :author, presence: true
   validates :book_type, presence: true
+  accepts_nested_attributes_for :book_metadata, update_only: true
+
 
   settings do
     mappings dynamic: false do
@@ -40,27 +42,15 @@ class Book < ActiveRecord::Base
   end
 
   def delete
-    self.is_deleted =1
-    self.save!
+    self.destroy!
   end
 
-  def is_available
-    if self.book_metadata.total_available > 0
-      true
-    else
-      false
-    end
-
+  def is_available?
+     self.book_metadata.total_available > 0
   end
 
-  def is_issued(user_id)
-    user = self.users.where(id: user_id)
-    if (user.present?)
-      true
-    else
-      false
-    end
-
+  def is_issued?(user_id)
+     self.users.where(id: user_id).present?
   end
 
 end

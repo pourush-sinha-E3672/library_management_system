@@ -1,10 +1,11 @@
 class User < ActiveRecord::Base
-  has_many :user_passwords, -> { where is_active: true}
+  has_one :user_password, -> { where is_active: true}
   belongs_to :user_type
-  has_many :book_user_associations
+  has_many :book_user_associations,:dependent => :destroy
   has_many :books ,:through => :book_user_associations
   has_many :user_login_histories
   has_many :user_otps
+  scope :active, -> { where(state: 'active') }
 
   validates :email, presence: true , format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name ,presence: true

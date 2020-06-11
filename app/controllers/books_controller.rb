@@ -1,9 +1,12 @@
 class BooksController < ApplicationController
-  before_action :check_if_user_exists,:check_user_session
+
+  include CommonActions
+
+  before_action :set_user
 
   def list
-    user_id =params[:user_id]
-    user = UsersHelper.get_user_by_id(user_id)
+    user_id = params[:user_id]
+    user =  User.where(:id =>user_id).first
     @is_admin = user.present? ? user.is_admin : false
     @user =user
     @book =[]
@@ -26,39 +29,34 @@ class BooksController < ApplicationController
 
   def update
     id =params[:id]
-    user_id =params[:user_id]
-
-    book = Book.find(id)
-    book.name=book["book"]["name"]  if (book.name != params["book"]["name"])
-    book.author=params["book"]["author"]  if (book.author != params["book"]["author"])
-    book.book_type=params["book"]["book_type"]  if (book.book_type != params["book"]["book_type"])
-    book.book_metadata.total_available = params["book"]["book_metadata_attributes"]["total_available"].to_i  if (book.book_metadata.total_available != params["book"]["book_metadata_attributes"]["total_available"].to_i)
-    book.book_metadata.total_number = params["book"]["book_metadata_attributes"]["total_number"].to_i  if (book.book_metadata.total_number != params["book"]["book_metadata_attributes"]["total_number"].to_i)
-    book.book_metadata.save!
-    book.save!
-    redirect_to book_details_path(book,user_id: user_id)
+    @user_id =params[:user_id]
+    @book = Book.find(id)
+    @book.update(book_params)
+      # redirect_to book_details_path(book,user_id: user_id)
+       render "/books/show"
   end
 
   def show
     id = params[:id]
     @book = Book.find(id)
     @user_id = params[:user_id]
-    user = UsersHelper.get_user_by_id(@user_id)
+    user = User.where(:id =>id).first
     @is_admin = user.present? ? user.is_admin : false
   end
 
   def delete
-    user_id=params[:user_id]
+    @user_id=params[:user_id]
     id = params[:id]
-    book = Book.find(id)
-    book.delete
-    flash[:notice] = "Book #{book.name} deleted"
-    redirect_to list_books_path(user_id: user_id)
+    @book = Book.find(id)
+    @book.delete
+    flash[:notice] = "Book #{@book.name} deleted"
+    redirect_to list_books_path(:user_id => @user_id)
   end
   def user_list
     id = params[:id]
-    book = Book.find(id)
+    book = Book.eager_load(:user,:book_user_associations).find(id)
     @user_id = params[:user_id]
+    @user = User.find_by_id(@user_id)
     user =book.users.present? ? book.users : []
     @issued_users = {}
     @book_id=book.id
@@ -74,41 +72,31 @@ class BooksController < ApplicationController
   end
 
   def add_book
-    user_id =params[:user_id]
-    book = Book.new
-    book.name=params["book_add_request"]["name"]
-    book.author=params["book_add_request"]["author"]
-    book.book_type=params["book_add_request"]["book_type"]
-    book.book_metadata =BookMetadata.new
-    book.book_metadata.total_available = params["book_add_request"]["book_metadata"]["total_available"].to_i
-    book.book_metadata.total_number = params["book_add_request"]["book_metadata"]["total_number"].to_i
+    @user_id =params[:user_id]
+    @book = Book.create(book_params)
+=begin
+    @book.name=params["book_add_request"]["name"]
+    @book.author=params["book_add_request"]["author"]
+    @book.book_type=params["book_add_request"]["book_type"]
+    @book.book_metadata =BookMetadata.new
+    @book.book_metadata.total_available = params["book_add_request"]["book_metadata"]["total_available"].to_i
+    @book.book_metadata.total_number = params["book_add_request"]["book_metadata"]["total_number"].to_i
     #book.book_metadata.save!
     book.save!
-    redirect_to book_details_path(book,user_id: user_id)
+=end
+    render "books/show"
 
   end
+
+
 
   private
-  def check_if_user_exists
-    user_id = params[:user_id]
-    user = UsersHelper.get_user_by_id(user_id)
-    if(!user.present?)
-      redirect_to root_path,:alert=>"User does not exist please signup for for access"
-    end
+
+  def book_params
+    params.require(:book).permit(:name, :author, :book_type, book_metadata_attributes: [ :total_available, :total_number ])
   end
 
-  def check_user_session
-    user_id = params[:user_id]
-    key ="user_session_#{user_id}"
-    session = $redis.get(key)
-    if session.present?
-      value = JSON.parse  $redis.get(key).gsub('=>', ':')
-      value["last_updated"] = Time.now.to_s
-      $redis.setex(key, 180, value)
-    else
-       redirect_to root_path,:alert =>"Your session is over Please login again for access"
-       return
-    end
-
+  def set_user
+    @user =User.find_by_id(params[:user_id])
   end
 end

@@ -17,9 +17,9 @@
       <td><%=book.name%></td>
       <td><%=book.book_metadata.total_available%></td>
       <td><%= link_to 'SHOW', book_details_path(book,user_id: @user.id) %></td>
-       <%  if  book.is_issued(@user.id) %>
+       <%  if  book.is_issued?(@user.id) %>
           <td><%=  link_to  'RETURN' ,book_return_path(params: {user_id: @user.id,book_id: book.id}) , method: :post%></td>
-        <%  elsif book.is_available%>
+        <%  elsif book.is_available?%>
         <td><%=  link_to  'ISSUE' ,book_issue_path(params: {user_id: @user.id,book_id: book.id}), method: :post%></td>
       <%  else %>
         <td><%=  'NOT_AVAILABLE' %></td>

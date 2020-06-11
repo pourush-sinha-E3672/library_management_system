@@ -1,11 +1,16 @@
 class UsersController < ApplicationController
-  def get_user_details
-  end
 
   def create_user
     sign_up_params = params[:sign_up_request]
     begin
-      UsersHelper.validate_sign_up_request(sign_up_params)
+    if !sign_up_params[:password].eql? sign_up_params[:confirm_password]
+      redirect_to sign_up_path(error: "pasword not matching")
+      return
+    end
+    if User.where(:name =>sign_up_params[:user],:state=>'active').present?
+      redirect_to sign_up_path(error: "User Already exist in Active State.Try with some other name")
+      return
+    end
     rescue LmsError => e
       redirect_to sign_up_path(error: e.message)
       return
@@ -17,7 +22,7 @@ class UsersController < ApplicationController
     user.user_type_id = sign_up_params[:user_type_id]
     user_password = UserPassword.new
     user_password.password = sign_up_params[:password]
-    user.user_passwords << user_password
+    user.user_password = user_password
     if user.valid?
       user.save!
       user_otp = UserOtp.new

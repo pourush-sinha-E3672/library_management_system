@@ -4,7 +4,7 @@
 <% end %>
 <p class="notice"><%= flash[:notice] %></p>
 <p class="alert"><%= flash[:alert] %></p>
-<%= form_for(:book_add_request, url: add_book_path(:user_id =>@user_id)) do |f| %>
+<%= form_for(:book, url: add_book_path(:user_id =>@user_id)) do |f| %>
   <p>
     <%= f.label :name %><br/>
     <%= f.text_field :name %>
@@ -19,14 +19,14 @@
   </p>
   <p>
     <%= f.label :total_available %><br/>
-    <%= f.fields_for :book_metadata do |f1| %>
+    <%= f.fields_for :book_metadata_attributes do |f1| %>
       <%= f1.text_field :total_available %>
     <% end %>
   </p>
 
   <p>
     <%= f.label :total_number %><br/>
-    <%= f.fields_for :book_metadata do |f1| %>
+    <%= f.fields_for :book_metadata_attributes do |f1| %>
       <%= f1.text_field :total_number %>
     <% end %>
   </p>
